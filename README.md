@@ -1,5 +1,7 @@
 # oodocument
-> Connects vía Uno bridge interface with libreoffice to perform simple format conversions and replace string over a document.
+
+Connects vía Uno bridge interface with libreoffice to perform simple format conversions and replace string over a document.
+[Pypi Package link](https://pypi.org/project/oodocument/)
 
 ## Dependencies
 
@@ -20,13 +22,14 @@ You must run headless libreoffice service (libreoffice executable can be differe
 - Search and replace
 - Support file Conversion to pdf, txt and docx
 
-## Example
+## Example use
 
 ### Search and Replace
 
 Will open **input.docx** file, search for **holamundo** String and replacing it by **XXX**, then would save the output to **output.pdf** with **pdf** format.
 
 ```
+import oodocument
 data = {}
 data['holamundo'] = 'XXX'
 oo = oodocument('./input.docx', host='0.0.0.0', port=8001)
@@ -37,6 +40,7 @@ oo.dispose()
 Will open **input.docx** file, search for **holamundo** String and replacing it by **XXX**, then would save the output to the same file.
 
 ```
+import oodocument
 data = {}
 data['holamundo'] = 'XXX'
 oo = oodocument('./input.docx', host='0.0.0.0', port=8001)
@@ -47,14 +51,8 @@ oo.dispose()
 Will convert **input.docx** file to **output.txt** file with **txt** format
 
 ```
+import oodocument
 oo = oodocument('./input.docx', host='0.0.0.0', port=8001)
 oo.convert_to('./output.txt', 'txt')
 oo.dispose()
 ```
-
-## TODO
-- Set global temoral directory
-- Tutorial dockerizing libreoffice ( including binding directories, volume)
-- Tests
-
-
