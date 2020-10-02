@@ -22,7 +22,11 @@ You must run headless libreoffice service (libreoffice executable can be differe
 - Search and replace
 - Support file Conversion to pdf, txt and docx
 
-## Example use
+## Install
+
+`pip install oodcument`
+
+## Examples
 
 ### Search and Replace
 
