@@ -11,7 +11,7 @@ setuptools.setup(
     description="Basic tasks to convert and replace files using uno api",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/camba/oodocument",
+    url="https://github.com/Cambalab/oodocument",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
