@@ -33,7 +33,7 @@ You must run headless libreoffice service (libreoffice executable can be differe
 Will open **input.docx** file, search for **holamundo** String and replacing it by **XXX**, then would save the output to **output.pdf** with **pdf** format.
 
 ```
-import oodocument
+from oodocument import oodocument
 data = {}
 data['holamundo'] = 'XXX'
 oo = oodocument('./input.docx', host='0.0.0.0', port=8001)
@@ -44,7 +44,7 @@ oo.dispose()
 Will open **input.docx** file, search for **holamundo** String and replacing it by **XXX**, then would save the output to the same file.
 
 ```
-import oodocument
+from oodocument import oodocument
 data = {}
 data['holamundo'] = 'XXX'
 oo = oodocument('./input.docx', host='0.0.0.0', port=8001)
@@ -55,7 +55,7 @@ oo.dispose()
 Will convert **input.docx** file to **output.txt** file with **txt** format
 
 ```
-import oodocument
+from oodocument import oodocument
 oo = oodocument('./input.docx', host='0.0.0.0', port=8001)
 oo.convert_to('./output.txt', 'txt')
 oo.dispose()
