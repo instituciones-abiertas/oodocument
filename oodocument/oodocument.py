@@ -67,8 +67,6 @@ class oodocument:
         search.SearchCaseSensitive = True
         search.SearchWords = True
         found = document.findFirst(search)
-        if found:
-            print('Found %s' % find)
         while found:
             found.String = found.String.replace(find, replace)
             found = document.findNext(found.End, search)
