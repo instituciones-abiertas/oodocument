@@ -46,7 +46,6 @@ class oodocument:
         search = self.document.createSearchDescriptor()
         for find, replace in data.items():
             self.find_and_replace(self.document, search, find, replace)
-            print(find, replace)
         if dest is None and format is None:
             self.save()
         else:
