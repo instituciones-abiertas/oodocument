@@ -36,7 +36,7 @@ class oodocument:
 
     def convert_to(self, dest, format):
         # Filters https://git.libreoffice.org/core/+/refs/heads/master/filter/source/config/fragments/filters
-        formats = { 'pdf': 'writer_pdf_Export', 'txt': 'Text', 'docx': 'MS Word 2007 XML' }
+        formats = { 'pdf': 'writer_pdf_Export', 'txt': 'Text', 'docx': 'MS Word 2007 XML', 'odt': 'writer8' }
         filter = PropertyValue()
         filter.Name = 'FilterName'
         filter.Value = formats[format]
