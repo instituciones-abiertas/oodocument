@@ -9,12 +9,12 @@ class oodocument:
         self.orig = orig
         self.host = host
         self.port = port
-        self.set_document()
+        self.__set_document()
 
     def __str__(self):
         return f'{self.orig}'
 
-    def set_document(self):
+    def __set_document(self):
         # get the uno component context from the PyUNO runtime
         localContext = uno.getComponentContext()
         # create the UnoUrlResolver
@@ -45,7 +45,7 @@ class oodocument:
     def replace_with(self, data={}, dest=None, format=None):
         search = self.document.createSearchDescriptor()
         for find, replace in data.items():
-            self.find_and_replace(self.document, search, find, replace)
+            self.__find_and_replace(self.document, search, find, replace)
         if dest is None and format is None:
             self.save()
         else:
@@ -60,7 +60,7 @@ class oodocument:
     def dispose(self):
         self.document.dispose()
 
-    def find_and_replace(self, document, search, find=None, replace=None):
+    def __find_and_replace(self, document, search, find=None, replace=None):
         """This function searches and replaces. Create search, call function findFirst, and finally replace what we found."""
         # What to search for
         search.SearchString = find
