@@ -9,6 +9,8 @@ class oodocument:
         self.orig = orig
         self.host = host
         self.port = port
+        self.font_color = None
+        self.font_back_color = None
         self.__set_document()
 
     def __str__(self):
@@ -69,7 +71,18 @@ class oodocument:
         found = document.findFirst(search)
         while found:
             found.String = found.String.replace(find, replace)
+            found.setPropertyValue( "CharColor", self.font_color) if self.font_color else ''
+            found.setPropertyValue( "CharBackColor", self.font_back_color) if self.font_back_color else ''
             found = document.findNext(found.End, search)
+
+    def set_font_color(self, r, g, b):
+        self.font_color = self.__rgbToOOColor(r, g, b)
+
+    def set_font_back_color(self, r, g, b):
+        self.font_back_color = self.__rgbToOOColor(r, g, b)
+
+    def __rgbToOOColor(self, r=0, g=0, b=0):
+        return (r * 256 * 256 + g * 256 + b)
 
 def absoluteUrl(relativeFile):
     """Constructs absolute path to the current dir in the format required by PyUNO that working with files"""
