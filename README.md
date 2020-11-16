@@ -19,8 +19,8 @@ You must run headless libreoffice service (libreoffice executable can be differe
 
 ## Features
 
-- Search and replace
-- Support file Conversion to pdf, txt and docx
+- Search and replace (with font colors and background)
+- Support file Conversion to pdf, txt, odt and docx
 
 ## Install
 
@@ -41,13 +41,15 @@ oo.replace_with(data, './output.pdf', 'pdf')
 oo.dispose()
 ```
 
-Will open **input.docx** file, search for **holamundo** String and replacing it by **XXX**, then would save the output to the same file.
+Will open **input.docx** file, search for **holamundo** String and replacing it by **XXX** with yellow background and red color font, then would save the output to the same file.
 
 ```
 from oodocument import oodocument
 data = {}
 data['holamundo'] = 'XXX'
 oo = oodocument('./input.docx', host='0.0.0.0', port=8001)
+oo.set_font_color(255, 255, 0)
+oo.set_font_back_color(255, 0, 0)
 oo.replace_with(data)
 oo.dispose()
 ```
