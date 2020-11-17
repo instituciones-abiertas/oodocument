@@ -1,1 +1,1 @@
-from oodocument import oodocument
+from .oodocument import oodocument
