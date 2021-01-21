@@ -41,6 +41,33 @@ oo.replace_with(data, './output.pdf', 'pdf')
 oo.dispose()
 ```
 
+### Search and Replace with Indexes
+
+Will open **input.docx** file with **holamundo** String. The package will found indexes and replace **mundo** String and replacing it by **XXX**, then would save the output to **output.pdf** with **pdf** format.
+
+In this case, you must build a  3-component tuple with the following format:```(start_index,end_index,text_to_replace)``` 
+
+```
+from oodocument import oodocument
+data = []
+data.append((5,10,'XXX'))
+oo = oodocument('./input.docx', host='0.0.0.0', port=8001)
+oo.replace_with_index(data, './output.pdf', 'pdf')
+oo.dispose()
+```
+
+Another Feature is the possibility of adding an offset parameter in ```replace_with_index```
+
+```
+from oodocument import oodocument
+data = []
+data.append((4,9,'XXX'))
+oo = oodocument('./input.docx', host='0.0.0.0', port=8001)
+oo.replace_with_index(data, './output.pdf', 'pdf',1)
+oo.dispose()
+```
+
+
 Will open **input.docx** file, search for **holamundo** String and replacing it by **XXX** with yellow background and red color font, then would save the output to the same file.
 
 ```

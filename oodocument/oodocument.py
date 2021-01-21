@@ -59,11 +59,22 @@ class oodocument:
         else:
             self.convert_to(dest, format)
 
+    def replace_with_index(self, data=[], dest=None, format=None, offset=0):
+        data.sort(key=lambda x: x[0], reverse=True)
+        for start_index, end_index, replace in data:
+            self.__find_and_replace_index(
+                self.document, start_index, end_index, replace, offset
+            )
+        if dest is None and format is None:
+            self.save()
+        else:
+            self.convert_to(dest, format)
+
     def save(self, dest=None, filter=None):
         if dest is None and filter is None:
             self.document.store()
         else:
-            self.document.storeToURL( absoluteUrl(dest), (filter,))
+            self.document.storeToURL(absoluteUrl(dest), (filter,))
 
     def dispose(self):
         self.document.dispose()
@@ -75,11 +86,31 @@ class oodocument:
         search.SearchCaseSensitive = True
         search.SearchWords = True
         found = document.findFirst(search)
+
         while found:
             found.String = found.String.replace(find, replace)
-            found.setPropertyValue( "CharColor", self.font_color) if self.font_color else ''
-            found.setPropertyValue( "CharBackColor", self.font_back_color) if self.font_back_color else ''
+            found.setPropertyValue(
+                "CharColor", self.font_color
+            ) if self.font_color else ""
+            found.setPropertyValue(
+                "CharBackColor", self.font_back_color
+            ) if self.font_back_color else ""
             found = document.findNext(found.End, search)
+
+    def __find_and_replace_index(
+        self, document, start_index=None, end_index=None, replace=None, offset=0
+    ):
+        """This function searches and replaces.Call function _get_word_index, and finally replace what we found."""
+        text = document.Text
+        cursor = text.createTextCursor()
+        cursor.goRight(start_index + offset, False)
+        cursor.goRight((end_index + offset) - (start_index + offset), True)
+        cursor.String = replace
+        cursor.setPropertyValue("CharColor", self.font_color) if self.font_color else ""
+        cursor.setPropertyValue(
+            "CharBackColor", self.font_back_color
+        ) if self.font_back_color else ""
+        cursor.gotoStart(False)
 
     def set_font_color(self, r, g, b):
         self.font_color = self.__rgbToOOColor(r, g, b)
