@@ -41,7 +41,7 @@ oo.replace_with(data, './output.pdf', 'pdf')
 oo.dispose()
 ```
 
-### Search and Replace for Index
+### Search and Replace with Indexes
 
 Will open **input.docx** file with **holamundo** String. The package will found indexes and replace **mundo** String and replacing it by **XXX**, then would save the output to **output.pdf** with **pdf** format.
 
