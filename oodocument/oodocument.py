@@ -59,12 +59,22 @@ class oodocument:
         else:
             self.convert_to(dest, format)
 
-    def replace_with_index(self, data=[], dest=None, format=None, offset=0):
+    def replace_with_index(self, data=[], dest=None, format=None, offset=0, word_neighbors=0):
+        data.sort(key=lambda x: x[0], reverse=True)
+        print(word_neighbors)
+        for start_index, end_index, replace, word_check in data:
+            self.__find_and_replace_index(
+                self.document, start_index, end_index, replace, word_check, offset, word_neighbors
+            )
+        if dest is None and format is None:
+            self.save()
+        else:
+            self.convert_to(dest, format)
+
+    def replace_with_index_in_header(self, data=[], dest=None, format=None, offset=0):
         data.sort(key=lambda x: x[0], reverse=True)
         for start_index, end_index, replace in data:
-            self.__find_and_replace_index(
-                self.document, start_index, end_index, replace, offset
-            )
+            self.__find_and_replace_index(self.document, start_index, end_index, replace, offset)
         if dest is None and format is None:
             self.save()
         else:
@@ -89,27 +99,51 @@ class oodocument:
 
         while found:
             found.String = found.String.replace(find, replace)
-            found.setPropertyValue(
-                "CharColor", self.font_color
-            ) if self.font_color else ""
-            found.setPropertyValue(
-                "CharBackColor", self.font_back_color
-            ) if self.font_back_color else ""
+            found.setPropertyValue("CharColor", self.font_color) if self.font_color else ""
+            found.setPropertyValue("CharBackColor", self.font_back_color) if self.font_back_color else ""
             found = document.findNext(found.End, search)
 
     def __find_and_replace_index(
-        self, document, start_index=None, end_index=None, replace=None, offset=0
+        self,
+        document,
+        start_index=None,
+        end_index=None,
+        replace=None,
+        word_check=None,
+        offset=0,
+        words_neighbors=0,
     ):
         """This function searches and replaces.Call function _get_word_index, and finally replace what we found."""
         text = document.Text
         cursor = text.createTextCursor()
         cursor.goRight(start_index + offset, False)
         cursor.goRight((end_index + offset) - (start_index + offset), True)
-        cursor.String = replace
-        cursor.setPropertyValue("CharColor", self.font_color) if self.font_color else ""
-        cursor.setPropertyValue(
-            "CharBackColor", self.font_back_color
-        ) if self.font_back_color else ""
+        print("En el cursor viene lo siguiente {}".format(cursor.String))
+        if not cursor.isStartOfWord() and cursor.String != word_check:
+            cursor.gotoStartOfWord(True)
+            print("Situando al principio de una palabra {}".format(cursor.String))
+        previous_word = 0
+        while cursor.String != word_check and words_neighbors > previous_word:
+            cursor.gotoPreviousWord(False)
+            cursor.gotoEndOfWord(True)
+            previous_word += 1
+            print("La palabra a comparar es anterior {}".format(cursor.String))
+            if cursor.String == word_check:
+                break
+            cursor.gotoStartOfWord(True)
+        self.__cursor_go_x_next_words(words_neighbors, cursor)
+        next_word = 0
+        while cursor.String != word_check and words_neighbors > next_word:
+            print("La palabra a comparar posterior {}".format(cursor.String))
+            cursor.gotoNextWord(False)
+            cursor.gotoEndOfWord(True)
+            next_word += 1
+        # Decision: Si no encuentra la palabra que hacemos? No reemplaza nada
+        if cursor.String == word_check:
+            cursor.String = replace
+            cursor.setPropertyValue("CharColor", self.font_color) if self.font_color else ""
+            cursor.setPropertyValue("CharBackColor", self.font_back_color) if self.font_back_color else ""
+
         cursor.gotoStart(False)
 
     def set_font_color(self, r, g, b):
@@ -119,15 +153,20 @@ class oodocument:
         self.font_back_color = self.__rgbToOOColor(r, g, b)
 
     def __rgbToOOColor(self, r=0, g=0, b=0):
-        return (r * 256 * 256 + g * 256 + b)
+        return r * 256 * 256 + g * 256 + b
+
+    def __cursor_go_x_next_words(self, count_words, cursor):
+        for x in range(count_words):
+            cursor.gotoNextWord(True)
+
 
 def absoluteUrl(relativeFile):
     """Constructs absolute path to the current dir in the format required by PyUNO that working with files"""
-    mbPrefix = '' if relativeFile[0] == '/' else os.path.realpath('.') + '/'
-    return 'file:///' + mbPrefix + relativeFile
+    mbPrefix = "" if relativeFile[0] == "/" else os.path.realpath(".") + "/"
+    return "file:///" + mbPrefix + relativeFile
 
 
 if __name__ == "__main__":
-    oo = oodocument('./input.docx', host='0.0.0.0', port=8001)
-    oo.convert_to('./output.txt', 'txt')
+    oo = oodocument("./input.docx", host="0.0.0.0", port=8001)
+    oo.convert_to("./output.txt", "txt")
     oo.dispose()
