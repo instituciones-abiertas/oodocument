@@ -4,8 +4,9 @@ import traceback
 import logging
 from com.sun.star.beans import PropertyValue
 
+
 class oodocument:
-    def __init__(self, orig, host='0.0.0.0', port='8001'):
+    def __init__(self, orig, host="0.0.0.0", port="8001"):
         self.orig = orig
         self.host = host
         self.port = port
@@ -14,39 +15,37 @@ class oodocument:
         self.__set_document()
 
     def __str__(self):
-        return f'{self.orig}'
+        return f"{self.orig}"
 
     def __set_document(self):
         # get the uno component context from the PyUNO runtime
         localContext = uno.getComponentContext()
         # create the UnoUrlResolver
         resolver = localContext.ServiceManager.createInstanceWithContext(
-            "com.sun.star.bridge.UnoUrlResolver", localContext)
+            "com.sun.star.bridge.UnoUrlResolver", localContext
+        )
         try:
             # connect to the running office
-            ctx = resolver.resolve(
-                f'uno:socket,host={self.host},port={self.port};urp;StarOffice.ComponentContext')
+            ctx = resolver.resolve(f"uno:socket,host={self.host},port={self.port};urp;StarOffice.ComponentContext")
         except Exception as e:
             logging.error(traceback.format_exc())
             raise
 
         # get the central desktop object
-        desktop = ctx.ServiceManager.createInstanceWithContext(
-            "com.sun.star.frame.Desktop", ctx)
-        self.document = desktop.loadComponentFromURL(
-            absoluteUrl(self.orig), "_blank", 0, ())
+        desktop = ctx.ServiceManager.createInstanceWithContext("com.sun.star.frame.Desktop", ctx)
+        self.document = desktop.loadComponentFromURL(absoluteUrl(self.orig), "_blank", 0, ())
 
     def convert_to(self, dest, format):
         # Filters https://git.libreoffice.org/core/+/refs/heads/master/filter/source/config/fragments/filters
         formats = {
-            'pdf': 'writer_pdf_Export',
-            'txt': 'Text',
-            'docx': 'MS Word 2007 XML',
-            'odt': 'writer8',
-            'doc': 'MS Word 97'
+            "pdf": "writer_pdf_Export",
+            "txt": "Text",
+            "docx": "MS Word 2007 XML",
+            "odt": "writer8",
+            "doc": "MS Word 97",
         }
         filter = PropertyValue()
-        filter.Name = 'FilterName'
+        filter.Name = "FilterName"
         filter.Value = formats[format]
         self.save(dest, filter)
 
@@ -111,35 +110,39 @@ class oodocument:
         replace=None,
         word_check=None,
         offset=0,
-        words_neighbors=0,
+        character_neighbors=0,
     ):
         """This function searches and replaces.Call function _get_word_index, and finally replace what we found."""
         text = document.Text
         cursor = text.createTextCursor()
+        total_lenght = (end_index + offset) - (start_index + offset)
         cursor.goRight(start_index + offset, False)
-        cursor.goRight((end_index + offset) - (start_index + offset), True)
+        cursor.goRight(total_lenght, True)
         print("En el cursor viene lo siguiente {}".format(cursor.String))
-        if not cursor.isStartOfWord() and cursor.String != word_check:
-            cursor.gotoStartOfWord(True)
-            print("Situando al principio de una palabra {}".format(cursor.String))
-        previous_word = 0
-        while cursor.String != word_check and words_neighbors > previous_word:
-            cursor.gotoPreviousWord(False)
-            cursor.gotoEndOfWord(True)
-            previous_word += 1
-            print("La palabra a comparar es anterior {}".format(cursor.String))
-            if cursor.String == word_check:
-                break
-            cursor.gotoStartOfWord(True)
-        self.__cursor_go_x_next_words(words_neighbors, cursor)
-        next_word = 0
-        while cursor.String != word_check and words_neighbors > next_word:
-            print("La palabra a comparar posterior {}".format(cursor.String))
-            cursor.gotoNextWord(False)
-            cursor.gotoEndOfWord(True)
-            next_word += 1
+        print("La palabra a modificar es {}".format(word_check))
+        # print("Coincide {} ".format(word_check in cursor.String))
+        # print("Coincide 2 {}".format(cursor.String in word_check))
+        # print("Coincide 3 {}".format(cursor.String not in word_check))
+        if word_check not in cursor.String:
+            character_word = 1
+            while word_check not in cursor.String and character_neighbors > character_word:
+                cursor.gotoStart(False)
+                cursor.goRight(start_index - character_word, False)
+                cursor.goRight(total_lenght, True)
+                character_word += 1
+                print("La palabra a comparar es anterior {}".format(cursor.String))
+
+        if word_check not in cursor.String:
+            character_word = 1
+            while word_check not in cursor.String and character_neighbors > character_word:
+                cursor.gotoStart(False)
+                cursor.goRight(start_index + offset + character_word, False)
+                cursor.goRight(total_lenght, True)
+                print("La palabra a comparar posterior {}".format(cursor.String))
+                character_word += 1
         # Decision: Si no encuentra la palabra que hacemos? No reemplaza nada
-        if cursor.String == word_check:
+        if word_check in cursor.String:
+            print("Reemplace")
             cursor.String = replace
             cursor.setPropertyValue("CharColor", self.font_color) if self.font_color else ""
             cursor.setPropertyValue("CharBackColor", self.font_back_color) if self.font_back_color else ""
