@@ -4,6 +4,7 @@ import traceback
 import logging
 from com.sun.star.beans import PropertyValue
 
+MAX_MOVES = 32767
 
 class oodocument:
     def __init__(self, orig, host="0.0.0.0", port="8001"):
@@ -60,7 +61,6 @@ class oodocument:
 
     def replace_with_index(self, data=[], dest=None, format=None, offset=0, word_neighbors=0):
         data.sort(key=lambda x: x[0], reverse=True)
-        print(word_neighbors)
         for start_index, end_index, replace, word_check in data:
             self.__find_and_replace_index(
                 self.document, start_index, end_index, replace, word_check, offset, word_neighbors
@@ -72,7 +72,7 @@ class oodocument:
 
     def replace_with_index_in_header(self, data=[], dest=None, format=None, offset=0):
         data.sort(key=lambda x: x[0], reverse=True)
-        for start_index, end_index, replace in data:
+        for start_index, end_index, replace, word_check in data:
             self.__find_and_replace_index(self.document, start_index, end_index, replace, offset)
         if dest is None and format is None:
             self.save()
@@ -102,6 +102,16 @@ class oodocument:
             found.setPropertyValue("CharBackColor", self.font_back_color) if self.font_back_color else ""
             found = document.findNext(found.End, search)
 
+    def safe_goRight(self, cursor, count, expand):
+        if count > MAX_MOVES:
+            jumps = count // MAX_MOVES
+            for i in range(jumps):
+                cursor.goRight(MAX_MOVES, False)
+            padding = count - (MAX_MOVES * jumps)
+            cursor.goRight(padding, expand)
+        else:
+            cursor.goRight(count, expand)
+
     def __find_and_replace_index(
         self,
         document,
@@ -110,39 +120,37 @@ class oodocument:
         replace=None,
         word_check=None,
         offset=0,
-        character_neighbors=0,
+        character_neighbors=20,
     ):
-        """This function searches and replaces.Call function _get_word_index, and finally replace what we found."""
+        """
+        Searches the given word and replaces it's value with the given
+        replacement string.
+        """
+
         text = document.Text
         cursor = text.createTextCursor()
-        total_lenght = (end_index + offset) - (start_index + offset)
-        cursor.goRight(start_index + offset, False)
-        cursor.goRight(total_lenght, True)
-        print("En el cursor viene lo siguiente {}".format(cursor.String))
-        print("La palabra a modificar es {}".format(word_check))
-        # print("Coincide {} ".format(word_check in cursor.String))
-        # print("Coincide 2 {}".format(cursor.String in word_check))
-        # print("Coincide 3 {}".format(cursor.String not in word_check))
-        if word_check not in cursor.String:
-            character_word = 1
-            while word_check not in cursor.String and character_neighbors > character_word:
-                cursor.gotoStart(False)
-                cursor.goRight(start_index - character_word, False)
-                cursor.goRight(total_lenght, True)
-                character_word += 1
-                print("La palabra a comparar es anterior {}".format(cursor.String))
+        total_lenght = (end_index + offset) - ((start_index) + offset) - 1
 
-        if word_check not in cursor.String:
+        self.safe_goRight(cursor, start_index + offset, False)
+        cursor.goRight(total_lenght, True)
+        character_word = 0
+        if word_check != cursor.String:
             character_word = 1
-            while word_check not in cursor.String and character_neighbors > character_word:
+            while word_check != cursor.String and character_neighbors > character_word:
                 cursor.gotoStart(False)
-                cursor.goRight(start_index + offset + character_word, False)
+                self.safe_goRight(cursor, start_index - character_word, False)
                 cursor.goRight(total_lenght, True)
-                print("La palabra a comparar posterior {}".format(cursor.String))
                 character_word += 1
-        # Decision: Si no encuentra la palabra que hacemos? No reemplaza nada
-        if word_check in cursor.String:
-            print("Reemplace")
+
+        if word_check != cursor.String:
+            character_word = 1
+            while word_check != cursor.String and character_neighbors > character_word:
+                cursor.gotoStart(False)
+                self.safe_goRight(cursor, start_index + offset + character_word, False)
+                cursor.goRight(total_lenght, True)
+                character_word += 1
+
+        if word_check == cursor.String:
             cursor.String = replace
             cursor.setPropertyValue("CharColor", self.font_color) if self.font_color else ""
             cursor.setPropertyValue("CharBackColor", self.font_back_color) if self.font_back_color else ""
