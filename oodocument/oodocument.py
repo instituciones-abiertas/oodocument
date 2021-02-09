@@ -6,6 +6,7 @@ from com.sun.star.beans import PropertyValue
 
 MAX_MOVES = 32767
 
+
 class oodocument:
     def __init__(self, orig, host="0.0.0.0", port="8001"):
         self.orig = orig
@@ -70,10 +71,21 @@ class oodocument:
         else:
             self.convert_to(dest, format)
 
-    def replace_with_index_in_header(self, data=[], dest=None, format=None, offset=0):
+    def replace_with_index_in_header(
+        self,
+        data=[],
+        dest=None,
+        format=None,
+        offset=0,
+        word_neighbors=0,
+        style_name="Default",
+    ):
         data.sort(key=lambda x: x[0], reverse=True)
+        paragraph = self.document.getStyleFamilies().getByName("PageStyles").getByName(style_name).HeaderText
         for start_index, end_index, replace, word_check in data:
-            self.__find_and_replace_index(self.document, start_index, end_index, replace, offset)
+            self.__find_and_replace_index(
+                self.document, start_index, end_index, replace, word_check, offset, word_neighbors, paragraph
+            )
         if dest is None and format is None:
             self.save()
         else:
@@ -121,24 +133,29 @@ class oodocument:
         word_check=None,
         offset=0,
         character_neighbors=20,
+        paragraph_to_replace=None,
     ):
         """
         Searches the given word and replaces it's value with the given
         replacement string.
         """
+        if paragraph_to_replace:
+            text = paragraph_to_replace.Text
+        else:
+            text = document.Text
 
-        text = document.Text
         cursor = text.createTextCursor()
         total_lenght = (end_index + offset) - ((start_index) + offset) - 1
 
         self.safe_goRight(cursor, start_index + offset, False)
         cursor.goRight(total_lenght, True)
         character_word = 0
+
         if word_check != cursor.String:
             character_word = 1
             while word_check != cursor.String and character_neighbors > character_word:
                 cursor.gotoStart(False)
-                self.safe_goRight(cursor, start_index - character_word, False)
+                self.safe_goRight(cursor, start_index + offset - character_word, False)
                 cursor.goRight(total_lenght, True)
                 character_word += 1
 
@@ -154,8 +171,7 @@ class oodocument:
             cursor.String = replace
             cursor.setPropertyValue("CharColor", self.font_color) if self.font_color else ""
             cursor.setPropertyValue("CharBackColor", self.font_back_color) if self.font_back_color else ""
-
-        cursor.gotoStart(False)
+            cursor.gotoStart(False)
 
     def set_font_color(self, r, g, b):
         self.font_color = self.__rgbToOOColor(r, g, b)
