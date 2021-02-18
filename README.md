@@ -67,16 +67,16 @@ oo.replace_with_index(data, './output.pdf', 'pdf',1)
 oo.dispose()
 ```
 ### Search and Replace with Indexes in Header
-Will open **input.docx** file with **holamundo** String in header. You know the name of style contains header.In that case , the style name is "First Page"
+Will open **input.docx** file with **holamundo** String in header. You know the name of style contains header.In that case , the style name is "Default Style".
 
 ```
 from oodocument import oodocument
 data = []
-header_style_name = "First Page"
+header_style_name = "Default Style"
 neighbor_character = 20
-data.append((4,9,'XXX'))
-oo = oodocument('./input.docx', host='0.0.0.0', port=8001)
-oo.replace_with_index_in_header(data_replace_header, path_output, format_output, 0, neighbor_character, header_style_name)
+data.append((4, 10, "XXX", "mundo"))
+oo = oodocument("./input.docx", host="0.0.0.0", port=8001)
+oo.replace_with_index_in_header(data, "./output.pdf", "pdf", 0, neighbor_character, header_style_name)
 oo.dispose()
 ```
 

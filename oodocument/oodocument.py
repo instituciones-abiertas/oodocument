@@ -78,9 +78,10 @@ class oodocument:
         format=None,
         offset=0,
         word_neighbors=0,
-        style_name="Default",
+        style_name="Default Style",
     ):
         data.sort(key=lambda x: x[0], reverse=True)
+
         paragraph = self.document.getStyleFamilies().getByName("PageStyles").getByName(style_name).HeaderText
         for start_index, end_index, replace, word_check in data:
             self.__find_and_replace_index(
