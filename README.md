@@ -66,7 +66,19 @@ oo = oodocument('./input.docx', host='0.0.0.0', port=8001)
 oo.replace_with_index(data, './output.pdf', 'pdf',1)
 oo.dispose()
 ```
+### Search and Replace with Indexes in Header
+Will open **input.docx** file with **holamundo** String in header. You know the name of style contains header.In that case , the style name is "Default Style".
 
+```
+from oodocument import oodocument
+data = []
+header_style_name = "Default Style"
+neighbor_character = 20
+data.append((4, 10, "XXX", "mundo"))
+oo = oodocument("./input.docx", host="0.0.0.0", port=8001)
+oo.replace_with_index_in_header(data, "./output.pdf", "pdf", 0, neighbor_character, header_style_name)
+oo.dispose()
+```
 
 Will open **input.docx** file, search for **holamundo** String and replacing it by **XXX** with yellow background and red color font, then would save the output to the same file.
 
