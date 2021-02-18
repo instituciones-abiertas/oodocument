@@ -81,8 +81,12 @@ class oodocument:
         style_name="Default Style",
     ):
         data.sort(key=lambda x: x[0], reverse=True)
+        try:
+            paragraph = self.document.getStyleFamilies().getByName("PageStyles").getByName(style_name).HeaderText
+        except Exception as e:
+            logging.error(traceback.format_exc())
+            raise
 
-        paragraph = self.document.getStyleFamilies().getByName("PageStyles").getByName(style_name).HeaderText
         for start_index, end_index, replace, word_check in data:
             self.__find_and_replace_index(
                 self.document, start_index, end_index, replace, word_check, offset, word_neighbors, paragraph
