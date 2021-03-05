@@ -27,6 +27,11 @@ You must run headless libreoffice service (libreoffice executable can be differe
 
 `pip install oodcument`
 
+## Test
+
+`make test`
+
+
 ## Examples
 
 ### Search and Replace
