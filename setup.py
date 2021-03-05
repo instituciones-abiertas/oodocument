@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="oodocument",
-    version="0.0.7",
+    version="0.0.8",
     author="José Luis Di Biase",
     author_email="josx@camba.coop",
     description="Basic tasks to convert and replace files using uno api",
