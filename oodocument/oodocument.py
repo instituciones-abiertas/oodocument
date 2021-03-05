@@ -14,6 +14,7 @@ class oodocument:
         self.port = port
         self.font_color = None
         self.font_back_color = None
+        self.clear_hyperlinks = True
         self.__set_document()
 
     def __str__(self):
@@ -114,9 +115,15 @@ class oodocument:
         found = document.findFirst(search)
 
         while found:
+            has_hyperlink_props = True if found.getPropertyValue("HyperLinkURL") or found.getPropertyValue("HyperLinkName") or found.getPropertyValue("HyperLinkTarget") else False
             found.String = found.String.replace(find, replace)
             found.setPropertyValue("CharColor", self.font_color) if self.font_color else ""
             found.setPropertyValue("CharBackColor", self.font_back_color) if self.font_back_color else ""
+            if self.clear_hyperlinks and has_hyperlink_props:
+                found.setPropertyValue("HyperLinkURL", "")
+                found.setPropertyValue("HyperLinkName", "")
+                found.setPropertyValue("HyperLinkTarget", "")
+
             found = document.findNext(found.End, search)
 
     def safe_goRight(self, cursor, count, expand):
@@ -173,10 +180,18 @@ class oodocument:
                 character_word += 1
 
         if word_check == cursor.String:
+            has_hyperlink_props = True if cursor.getPropertyValue("HyperLinkURL") or cursor.getPropertyValue("HyperLinkName") or cursor.getPropertyValue("HyperLinkTarget") else False
             cursor.String = replace
             cursor.setPropertyValue("CharColor", self.font_color) if self.font_color else ""
             cursor.setPropertyValue("CharBackColor", self.font_back_color) if self.font_back_color else ""
+            if self.clear_hyperlinks and has_hyperlink_props:
+                cursor.setPropertyValue("HyperLinkURL", "")
+                cursor.setPropertyValue("HyperLinkName", "")
+                cursor.setPropertyValue("HyperLinkTarget", "")
             cursor.gotoStart(False)
+
+    def set_clear_hyperlinks(self, val):
+        self.clear_hyperlinks = True if val else False
 
     def set_font_color(self, r, g, b):
         self.font_color = self.__rgbToOOColor(r, g, b)

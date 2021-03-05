@@ -19,7 +19,8 @@ You must run headless libreoffice service (libreoffice executable can be differe
 
 ## Features
 
-- Search and replace (with font colors and background)
+- Search and replace
+- Support font colors, background and clear hyperlinks
 - Support file Conversion to pdf, txt, odt and docx
 
 ## Install
@@ -89,6 +90,7 @@ data['holamundo'] = 'XXX'
 oo = oodocument('./input.docx', host='0.0.0.0', port=8001)
 oo.set_font_color(255, 255, 0)
 oo.set_font_back_color(255, 0, 0)
+oo.set_clear_hyperlinks(False) # default value is True
 oo.replace_with(data)
 oo.dispose()
 ```
