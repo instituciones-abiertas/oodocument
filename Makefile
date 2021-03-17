@@ -4,10 +4,6 @@ default: help
 help:
 	@grep -E '[a-zA-Z\.\-]+:.*?@ .*$$' $(MAKEFILE_LIST)| tr -d '#'  | awk 'BEGIN {FS = ":.*?@ "}; {printf "\033[32m%-30s\033[0m%s\n", $$1, $$2}'
 
-#install: @ Clean and install deps
-install: clean
-	pip3 install -r requirements.txt
-
 #test: @ Run all tests
 test:
 	python3 -m unittest discover -p "test_*.py"
@@ -48,4 +44,4 @@ dist: clean
 	python3 setup.py bdist_wheel
 	ls -l dist
 
-.PHONY: install test clean release dist
+.PHONY: test clean release dist
