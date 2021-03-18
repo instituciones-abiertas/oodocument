@@ -1,12 +1,11 @@
 # `oodocument` Contributing Guide
 
-Hi! We're really excited that you are interested in contributing to LiveDj. Before submitting your contribution, please make sure to take a moment and read through the following guidelines:
+Hi! We're really excited that you are interested in contributing to `oodocument`. Before submitting your contribution, please make sure to take a moment and read through the following guidelines:
 
 +   [Code of Conduct](https://github.com/instituciones-abiertas/oodocument/blob/main/CODE_OF_CONDUCT.md)
 +   [Issue Reporting Guidelines](#issue-reporting-guidelines)
 +   [Pull Request Guidelines](#pull-request-guidelines)
 +   [Development Setup](#development-setup)
-+   [Project Structure](#project-structure)
 
 ## Issue Reporting Guidelines
 
